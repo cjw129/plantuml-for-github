@@ -1360,6 +1360,55 @@
     blocks.forEach(processBlock);
   }
 
+  // ------------------------------------------------------------------
+  // file:// coexistence with Markdown Viewer.
+  //
+  // For a local .md file, Chrome shows the raw text in a lone <pre> and
+  // Markdown Viewer then replaces the whole <body> with its rendered
+  // output. If we scanned immediately we would race with it: we could
+  // process the raw <pre> (and lose the work when it is wiped), or miss
+  // the rendered blocks. So on a file:// page that still looks like a
+  // plain-text view, hold off until Markdown Viewer has mounted its
+  // #_html / #_markdown container (or the original <pre> is gone) and
+  // has run its post-render passes, then start. If it never shows up
+  // (not installed, or the file is not handled), fall back to starting
+  // after a timeout.
+  // ------------------------------------------------------------------
+  const MV_SETTLE_MS = 150;   // > MV's Prism/Mermaid/MathJax timers (20/40/60 ms)
+  const MV_TIMEOUT_MS = 3000;
+
+  function whenMarkdownViewerDone(start) {
+    const body = document.body;
+    const rawPre = body && body.children.length === 1 &&
+      body.firstElementChild.tagName === 'PRE' ? body.firstElementChild : null;
+    if (location.protocol !== 'file:' || !rawPre) {
+      start();
+      return;
+    }
+    let started = false;
+    let settleTimer = null;
+    const go = () => {
+      if (started) return;
+      started = true;
+      mvObserver.disconnect();
+      clearTimeout(settleTimer);
+      clearTimeout(timeoutTimer);
+      start();
+    };
+    const check = () => {
+      if (settleTimer) return;
+      if (!rawPre.isConnected || document.getElementById('_html') || document.getElementById('_markdown')) {
+        TRACE('Markdown Viewer detected; starting after settle delay');
+        settleTimer = setTimeout(go, MV_SETTLE_MS);
+      }
+    };
+    const mvObserver = new MutationObserver(check);
+    mvObserver.observe(body, { childList: true, subtree: true });
+    const timeoutTimer = setTimeout(go, MV_TIMEOUT_MS);
+    check();
+  }
+
+  function start() {
   // Initial scan.
   TRACE('starting initial scan');
   scanAndProcess(document.body);
@@ -1414,4 +1463,7 @@
   });
   observer.observe(document.body, { childList: true, subtree: true });
   TRACE('MutationObserver attached');
+  }
+
+  whenMarkdownViewerDone(start);
 })();
