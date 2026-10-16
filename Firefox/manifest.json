@@ -59,6 +59,11 @@
         "k8s.min.js",
         "kubernetes.min.js",
         "osa2.min.js",
+        "awslib10.min.js",
+        "bootstrap.min.js",
+        "bootstrap1.13.1.min.js",
+        "office.min.js",
+        "osa.min.js",
         "emoji.js",
         "themes.js",
         "openiconic.js"

@@ -6,6 +6,19 @@ that share the same version number from `0.2.2` onward.
 
 ## Unreleased
 
+- **All stdlib libraries are now bundled**, so `!include <lib/...>` works
+  for every library the project site publishes. Added `awslib10`,
+  `bootstrap` (+ `bootstrap1.13.1`), `office` and `osa` to both builds,
+  and the heavy sprite collections `awslib` / `awslib14` / `awslib20`,
+  `ibm`, `logos`, `material` / `material2` / `material2.1.19` and
+  `tupadr3` (about 80 MB) to the **Chrome build only**: several of them
+  exceed AMO's 5 MB per-file linter limit, so the Firefox build cannot
+  ship them. `fetch_stdlib.py` keeps the two lists (`STDLIB_BUNDLES`,
+  `CHROME_ONLY_BUNDLES`) in sync with the build scripts and manifest.
+- **`file:///*` is now matched** by the content script and the web
+  accessible resources, and on a `file://` page the initial scan waits
+  for Markdown Viewer to finish rendering so the two extensions no
+  longer race.
 - **Preamble before `@startuml` is now accepted**, fixing
   [#17](https://github.com/plantuml/plantuml-for-github/issues/17).
   Comments (`' ...`), licence headers or blank lines placed before

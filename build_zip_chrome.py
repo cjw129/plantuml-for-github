@@ -49,16 +49,26 @@ FILES = {
 
 # Standard-library bundles the engine lazy-loads for `!include <lib/...>`.
 # TeaVmScriptLoader resolves `<lib>.min.js` relative to renderer.html, so
-# these MUST live at the extension root (not under vendor/). Only the
-# self-contained libraries small enough to ship are bundled; the heavy
-# sprite collections (ibm, tupadr3, awslib*, material*, logos, office,
-# osa, bootstrap*) stay out - together they would add ~90 MB.
+# these MUST live at the extension root (not under vendor/). The Chrome
+# build ships every library the project site publishes, including the
+# heavy sprite collections (~80 MB; see CHROME_ONLY_BUNDLES below).
 STDLIB_BUNDLES = [
     "adaml", "archimate", "azure", "c4", "classy", "classy-c4",
     "cloudinsight", "cloudogu", "domainstory", "edgy", "eip",
     "elastic", "gcp", "k8s", "kubernetes", "osa2",
+    # Previously left out as "heavy"; each is under AMO's 5 MB limit.
+    "awslib10", "bootstrap", "bootstrap1.13.1", "office", "osa",
 ]
-for lib in STDLIB_BUNDLES:
+# Heavy sprite collections: shipped in the Chrome build only (several are
+# over AMO's 5 MB per-file linter limit, so the Firefox build cannot ship them).
+# `awslib`, `material` and `material2` are tiny alias stubs that point at
+# awslib14 / material2.1.19, so they travel with their targets.
+CHROME_ONLY_BUNDLES = [
+    "awslib", "awslib14", "awslib20", "ibm", "logos",
+    "material", "material2", "material2.1.19", "tupadr3",
+]
+
+for lib in STDLIB_BUNDLES + CHROME_ONLY_BUNDLES:
     FILES[f"{lib}.min.js"] = CHROME_DIR / f"{lib}.min.js"
 
 # Support scripts the engine lazy-loads the same way (same root-level

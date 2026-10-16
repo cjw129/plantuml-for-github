@@ -58,15 +58,16 @@ FILES = {
 
 # Standard-library bundles the engine lazy-loads for `!include <lib/...>`.
 # TeaVmScriptLoader resolves `<lib>.min.js` relative to renderer.html, so
-# these MUST live at the extension root (not under vendor/). Only the
-# self-contained libraries small enough to ship are bundled; every one is
-# far below AMO's 5 MB per-file linter limit. The heavy sprite
-# collections (ibm, tupadr3, awslib*, material*, logos, office, osa,
-# bootstrap*) stay out - together they would add ~90 MB.
+# these MUST live at the extension root (not under vendor/). Only bundles
+# under AMO's 5 MB per-file linter limit are shipped. The rest (awslib14/20,
+# ibm, logos, material*, tupadr3) are Chrome-only; see CHROME_ONLY_BUNDLES
+# in fetch_stdlib.py.
 STDLIB_BUNDLES = [
     "adaml", "archimate", "azure", "c4", "classy", "classy-c4",
     "cloudinsight", "cloudogu", "domainstory", "edgy", "eip",
     "elastic", "gcp", "k8s", "kubernetes", "osa2",
+    # Previously left out as "heavy"; each is under AMO's 5 MB limit.
+    "awslib10", "bootstrap", "bootstrap1.13.1", "office", "osa",
 ]
 for lib in STDLIB_BUNDLES:
     FILES[f"{lib}.min.js"] = FIREFOX_DIR / f"{lib}.min.js"
