@@ -33,7 +33,8 @@
     {
       "matches": [
         "https://github.com/*",
-        "https://*.ghe.com/*"
+        "https://*.ghe.com/*",
+        "file:///*"
       ],
       "js": ["content.js"],
       "run_at": "document_idle"
@@ -74,7 +75,7 @@
         "themes.js",
         "openiconic.js"
       ],
-      "matches": ["https://github.com/*", "https://*.ghe.com/*"]
+      "matches": ["https://github.com/*", "https://*.ghe.com/*", "file:///*"]
     }
   ],
 
