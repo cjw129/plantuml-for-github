@@ -91,9 +91,21 @@
         "themes.js",
         "openiconic.js"
       ],
-      "matches": ["https://github.com/*", "https://*.ghe.com/*", "file:///*"]
+      "matches": ["<all_urls>"]
     }
   ],
 
-  "permissions": ["clipboardWrite"]
+  "permissions": ["clipboardWrite", "storage", "scripting"],
+
+#if CHROME
+  "optional_host_permissions": ["*://*/*"],
+#endif
+#if FIREFOX
+  "optional_permissions": ["*://*/*"],
+#endif
+
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  }
 }

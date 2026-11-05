@@ -6,6 +6,17 @@ that share the same version number from `0.2.2` onward.
 
 ## Unreleased
 
+- **Options page to manage the sites where diagrams are rendered.** The
+  built-in sites (GitHub, GitHub Enterprise Cloud, local files) can be
+  turned off, and other sites that show `plantuml` code blocks (a
+  self-hosted GitLab or Gitea, a documentation site, ...) can be added.
+  A site is added with an optional host permission that the browser asks
+  for at that moment, plus a content script registered at runtime, so the
+  install-time permission prompt does not change. New permissions:
+  `storage` (the site settings) and `scripting` (registering the content
+  script); the renderer page is now web accessible to every site so that
+  it can be embedded on the added ones. The content script also runs only
+  once per page when two registrations overlap.
 - **All stdlib libraries are now bundled**, so `!include <lib/...>` works
   for every library the project site publishes. Added `awslib10`,
   `bootstrap` (+ `bootstrap1.13.1`), `office` and `osa` to both builds,

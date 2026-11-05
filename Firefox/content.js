@@ -9,6 +9,12 @@
 (function () {
   'use strict';
 
+  // The same script can be injected twice into one page: by the static
+  // content script and by one of the sites added in the options page
+  // (e.g. a wildcard site that also covers github.com). Run only once.
+  if (window.__plantumlForGithubLoaded) return;
+  window.__plantumlForGithubLoaded = true;
+
   // ====== TRACE ======
   // Set DEBUG to true to get detailed traces in the page's console.
   const DEBUG = false;
@@ -1465,5 +1471,37 @@
   TRACE('MutationObserver attached');
   }
 
-  whenMarkdownViewerDone(start);
+  // ------------------------------------------------------------------
+  // Per-site switch, managed in the options page.
+  //
+  // The built-in sites (GitHub, GitHub Enterprise Cloud, local files) are
+  // declared statically in the manifest and can only be turned off here;
+  // the sites added by the user are registered by the options page and are
+  // always on while they are registered.
+  // ------------------------------------------------------------------
+  function builtinSiteId() {
+    if (location.protocol === 'file:') return 'file';
+    if (location.hostname === 'github.com') return 'github';
+    if (location.hostname.endsWith('.ghe.com')) return 'ghe';
+    return null;
+  }
+
+  function whenSiteEnabled(run) {
+    const id = builtinSiteId();
+    if (!id) { run(); return; }
+    try {
+      chrome.storage.sync.get('sites', (res) => {
+        const disabled = res && res.sites && res.sites.disabled;
+        if (Array.isArray(disabled) && disabled.includes(id)) {
+          TRACE('site "' + id + '" is turned off in the options page');
+          return;
+        }
+        run();
+      });
+    } catch (err) {
+      run();
+    }
+  }
+
+  whenSiteEnabled(() => whenMarkdownViewerDone(start));
 })();

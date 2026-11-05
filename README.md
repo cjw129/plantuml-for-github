@@ -32,14 +32,45 @@ Bob --> Alice: hi
 
 This is the same architecture GitHub already uses for Mermaid — proving that client-side PlantUML can be integrated natively with zero infrastructure cost.
 
+## Sites
+
+Open the options page (Chrome: `chrome://extensions` -> PlantUML for GitHub ->
+Details -> Extension options; Firefox: Add-ons -> PlantUML for GitHub ->
+Preferences) to choose where diagrams are rendered:
+
+- **Built-in sites** (GitHub, GitHub Enterprise Cloud, local files) can be turned off.
+- **Your sites** adds any other site that shows `plantuml` code blocks, for
+  example a self-hosted GitLab or Gitea, or a documentation site. Type an
+  address (`gitlab.example.com`, `https://gitlab.example.com`,
+  `*.example.com`, `http://localhost:3000`), accept the browser's permission
+  prompt, and reload the site. A site that has a port needs `http://` or
+  `https://` in front of it. Remove the site to remove the permission.
+
+Local files also need the **Allow access to file URLs** switch on the
+extension's page in `chrome://extensions`.
+
+On the sites you add, the extension looks for the same code blocks it uses on
+GitHub (`plantuml`, `puml` and `wsd` languages, and blocks that contain
+`@startuml` / `@enduml`). The standalone `.puml` file view is GitHub only.
+
 ## Security & permissions
 
-The extension requires **no host permissions, no storage and no tabs API**.
-The only declared permission is `clipboardWrite`, used solely by the
-user-triggered "Copy as bitmap" button to put the rendered diagram on the
-clipboard. Beyond that, it only ships a content script scoped to
-`github.com` and `*.ghe.com` (GitHub Enterprise Cloud) and a packaged
-renderer page.
+The extension requires **no host permissions at install time and no tabs API**.
+It declares three permissions:
+
+- `clipboardWrite`, used solely by the user-triggered "Copy as bitmap" button
+  to put the rendered diagram on the clipboard.
+- `storage`, used only to remember which sites are turned on or off in the
+  [options page](#sites).
+- `scripting`, used only to register the content script on the sites you add
+  in the options page.
+
+Out of the box it ships a content script scoped to `github.com`, `*.ghe.com`
+(GitHub Enterprise Cloud) and local `file://` pages, and a packaged renderer
+page. Access to any other site is an *optional* host permission: the browser
+asks for it when you add that site in the options page, and removing the site
+gives it back. The renderer page is web accessible to every site, so that it
+can be embedded on the sites you add.
 
 The extension also runs under the stock Manifest V3 Content Security Policy
 (essentially `script-src 'self'`), with no relaxation at all. Diagrams that
@@ -83,7 +114,8 @@ Save it, then reload the page. The diagram should appear.
 - [x] Render standalone `.puml` / `.plantuml` / `.pu` / `.wsd` files
 - [x] Emoji (`<:1f600:>`), `!theme` and OpenIconic (`<&icon>`) support
 - [ ] Render `.puml` files in pull request diffs
-- [ ] Options page (toggle, performance settings)
+- [x] Options page: choose the sites where diagrams are rendered
+- [ ] Performance settings
 - [X] Chrome Web Store publication
 
 ## Why this extension exists

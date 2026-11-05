@@ -18,7 +18,7 @@ The engine ships with 16 standard-library bundles out of the box (C4, Azure, GCP
 
 SECURITY AND PERMISSIONS
 
-Minimal permissions: the extension requires no host permissions, no storage, and no tabs API. The only declared permission is clipboardWrite, used solely by the user-triggered "Copy as Bitmap" button to copy the generated diagram to the clipboard.
+Minimal permissions: the extension requires no host permissions at install time and no tabs API. It declares clipboardWrite (used solely by the user-triggered "Copy as Bitmap" button), storage (used only to remember which sites are turned on or off) and scripting (used only to register the content script on sites the user adds). Out of the box it runs on github.com, *.ghe.com and local files only. Any other site is an optional host permission that the browser asks for when the user adds the site in the options page, and that is given back when the site is removed.
 
 The extension runs under the stock Manifest V3 Content Security Policy for extension pages -- essentially script-src 'self' -- with no relaxation at all. Diagrams that need graph layout (class, component, deployment, state, and use-case diagrams) are laid out by Smetana, PlantUML's own built-in Java port of the Graphviz layout algorithms, compiled into the same plantuml.js file as the rest of the engine. There is no WebAssembly module anywhere in the extension, and no 'wasm-unsafe-eval' directive in the manifest -- nothing to relax.
 
@@ -49,7 +49,7 @@ If you'd like to see this integrated natively, please upvote the discussion: htt
 
 PRIVACY
 
-No tracking. No network requests. No permissions beyond clipboardWrite. Everything runs locally, inside a sandboxed iframe.
+No tracking. No network requests. No host permissions unless you add a site yourself. Everything runs locally, inside a sandboxed iframe.
 
 LINKS
 
